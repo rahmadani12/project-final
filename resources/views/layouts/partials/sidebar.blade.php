@@ -27,38 +27,55 @@
             🌦
             <span class="ml-3">Weather</span>
         </a>
-
-        <a href="#" class="block px-6 py-3 hover:bg-slate-700">
-            📈 Economy
+     
+        <a href="{{ route('economy.index') }}"
+        class="flex items-center px-6 py-3 hover:bg-gray-700">
+            💰  
+            <span class="ml-3">Economy</span>
         </a>
 
-        <a href="#" class="block px-6 py-3 hover:bg-slate-700">
-            💱 Currency
+        <a href="{{ route('currency.index') }}"
+        class="flex items-center px-6 py-3 hover:bg-gray-700">
+            💱
+            <span class="ml-3">Currency</span>
         </a>
 
         <a href="{{ route('ports.index') }}"
         class="flex items-center px-6 py-3 hover:bg-gray-700">
-
             🚢
             <span class="ml-3">Ports</span>
-
         </a>
 
-        <a href="#" class="block px-6 py-3 hover:bg-slate-700">
-            📰 News
+        <a href="{{ route('news.index') }}"
+        class="flex items-center px-6 py-3 hover:bg-gray-700">
+            📰
+            <span class="ml-3">News</span>
         </a>
 
-        <a href="#" class="block px-6 py-3 hover:bg-slate-700">
-            ⚠️ Risk Score
+         <a href="{{ route('risk-score.index') }}"
+        class="flex items-center px-6 py-3 hover:bg-gray-700">
+            ⚠️
+            <span class="ml-3">Risk Score</span>
         </a>
 
-        <a href="#" class="block px-6 py-3 hover:bg-slate-700">
-            📊 Comparison
+         <a href="{{ route('comparison.index') }}"
+        class="flex items-center px-6 py-3 hover:bg-gray-700">
+            📊
+            <span class="ml-3">Comparison</span>
         </a>
 
-        <a href="#" class="block px-6 py-3 hover:bg-slate-700">
-            ⭐ Watchlist
+        <a href="{{ route('watchlist.index') }}"
+        class="flex items-center px-6 py-3 hover:bg-gray-700">
+            ⭐
+            <span class="ml-3">Watchlist</span>
         </a>
+
+        <a href="{{ route('map.index') }}"
+        class="flex items-center px-6 py-3 hover:bg-gray-700">
+            🗺
+            <span class="ml-3">Interactive Map</span>
+        </a>
+
 
     </nav>
 

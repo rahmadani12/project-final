@@ -3,7 +3,7 @@
 @section('content')
 
 <h1 class="text-3xl font-bold mb-6">
-    🌦 Weather Management
+    💰 Economy Management
 </h1>
 
 @if(session('success'))
@@ -16,20 +16,20 @@
 
     <div class="flex justify-between items-center mb-6">
 
-        <a href="{{ route('weather.create') }}"
+        <a href="{{ route('economy.create') }}"
            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
 
-            + Tambah Weather
+            + Tambah Data Economy
 
         </a>
 
-        <form method="GET" action="{{ route('weather.index') }}">
+        <form method="GET" action="{{ route('economy.index') }}">
 
             <input
                 type="text"
                 name="search"
                 value="{{ request('search') }}"
-                placeholder="Cari Kota / Negara..."
+                placeholder="Cari Negara..."
                 class="border rounded px-3 py-2">
 
             <button
@@ -42,18 +42,6 @@
         </form>
 
     </div>
-    <form action="{{ route('weather.update') }}" method="POST" class="mb-4">
-
-        @csrf
-
-        <button
-            class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">
-
-            🔄 Update Weather API
-
-        </button>
-
-    </form>
 
     <table class="w-full border-collapse">
 
@@ -62,11 +50,10 @@
             <tr class="bg-gray-100">
 
                 <th class="border p-3">Country</th>
-                <th class="border p-3">City</th>
-                <th class="border p-3">Temperature</th>
-                <th class="border p-3">Humidity</th>
-                <th class="border p-3">Wind</th>
-                <th class="border p-3">Weather</th>
+                <th class="border p-3">GDP</th>
+                <th class="border p-3">Inflation</th>
+                <th class="border p-3">Growth</th>
+                <th class="border p-3">Year</th>
                 <th class="border p-3">Action</th>
 
             </tr>
@@ -75,59 +62,48 @@
 
         <tbody>
 
-        @forelse($weatherData as $weather)
+        @forelse($economies as $economy)
 
             <tr>
 
                 <td class="border p-2">
-                    {{ $weather->country->name ?? '-' }}
+                    {{ $economy->country->name }}
                 </td>
 
                 <td class="border p-2">
-                    {{ $weather->city }}
+                    {{ number_format($economy->gdp,2) }}
                 </td>
 
                 <td class="border p-2">
-                    {{ $weather->temperature }} °C
+                    {{ $economy->inflation }} %
                 </td>
 
                 <td class="border p-2">
-                    {{ $weather->humidity }} %
+                    {{ $economy->growth }} %
                 </td>
 
                 <td class="border p-2">
-                    {{ $weather->wind_speed }} km/h
-                </td>
-
-                <td class="border p-2">
-                    {{ $weather->weather }}
+                    {{ $economy->year }}
                 </td>
 
                 <td class="border p-2 text-center">
 
-                    <a href="{{ route('weather.show',$weather) }}"
+                    <a href="{{ route('economy.show',$economy) }}"
                        class="bg-blue-500 text-white px-2 py-1 rounded">
 
                         Detail
 
                     </a>
 
-                    <a href="{{ route('weather.edit',$weather) }}"
+                    <a href="{{ route('economy.edit',$economy) }}"
                        class="bg-yellow-500 text-white px-2 py-1 rounded">
 
                         Edit
 
                     </a>
 
-                    <a href="{{ route('weather.refresh', $weather) }}"
-                    class="bg-green-600 text-white px-2 py-1 rounded">
-
-                        Update API
-
-                    </a>
-
                     <form
-                        action="{{ route('weather.destroy',$weather) }}"
+                        action="{{ route('economy.destroy',$economy) }}"
                         method="POST"
                         class="inline">
 
@@ -135,7 +111,7 @@
                         @method('DELETE')
 
                         <button
-                            onclick="return confirm('Hapus data cuaca?')"
+                            onclick="return confirm('Hapus data ekonomi?')"
                             class="bg-red-600 text-white px-2 py-1 rounded">
 
                             Hapus
@@ -152,9 +128,10 @@
 
             <tr>
 
-                <td colspan="7" class="text-center p-6">
+                <td colspan="6"
+                    class="text-center p-6">
 
-                    Belum ada data cuaca.
+                    Belum ada data ekonomi.
 
                 </td>
 
@@ -168,7 +145,7 @@
 
     <div class="mt-6">
 
-        {{ $weatherData->links() }}
+        {{ $economies->links() }}
 
     </div>
 

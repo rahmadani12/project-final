@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Country;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 
 class CountryController extends Controller
 {
@@ -21,6 +20,36 @@ class CountryController extends Controller
         return view('countries.index', compact('countries', 'search'));
     }
 
+    public function create()
+    {
+        return view('countries.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'code' => 'required|unique:countries,code',
+        ]);
+
+        Country::create([
+            'name'       => $request->name,
+            'code'       => strtoupper($request->code),
+            'capital'    => $request->capital,
+            'currency'   => $request->currency,
+            'region'     => $request->region,
+            'subregion'  => $request->subregion,
+            'population' => $request->population,
+            'flag'       => $request->flag,
+            'latitude'   => $request->latitude,
+            'longitude'  => $request->longitude,
+        ]);
+
+        return redirect()
+            ->route('countries.index')
+            ->with('success', 'Country berhasil ditambahkan.');
+    }
+
     public function import()
     {
         $countries = json_decode(
@@ -28,26 +57,27 @@ class CountryController extends Controller
             true
         );
 
-        Country::truncate();
-
         foreach ($countries as $item) {
 
-            Country::create([
+            Country::updateOrCreate(
 
-                'name'       => $item['name']['common'] ?? '',
-                'code'       => $item['cca2'] ?? '',
-                'capital'    => $item['capital'][0] ?? '',
-                'currency'   => isset($item['currencies'])
-                    ? array_key_first($item['currencies'])
-                    : '',
-                'region'     => $item['region'] ?? '',
-                'subregion'  => $item['subregion'] ?? '',
-                'population' => $item['population'] ?? 0,
-                'flag'       => $item['flag'] ?? '',
-                'latitude'   => $item['latlng'][0] ?? null,
-                'longitude'  => $item['latlng'][1] ?? null,
+                ['code' => $item['cca2']],
 
-            ]);
+                [
+                    'name'       => $item['name']['common'] ?? '',
+                    'capital'    => $item['capital'][0] ?? '',
+                    'currency'   => isset($item['currencies'])
+                        ? array_key_first($item['currencies'])
+                        : '',
+                    'region'     => $item['region'] ?? '',
+                    'subregion'  => $item['subregion'] ?? '',
+                    'population' => $item['population'] ?? 0,
+                    'flag'       => $item['flag'] ?? '',
+                    'latitude'   => $item['latlng'][0] ?? null,
+                    'longitude'  => $item['latlng'][1] ?? null,
+                ]
+
+            );
         }
 
         return redirect()
@@ -67,9 +97,26 @@ class CountryController extends Controller
 
     public function update(Request $request, Country $country)
     {
-        $country->update($request->all());
+        $request->validate([
+            'name' => 'required',
+            'code' => 'required|unique:countries,code,' . $country->id,
+        ]);
 
-        return redirect()->route('countries.index')
+        $country->update([
+            'name'       => $request->name,
+            'code'       => strtoupper($request->code),
+            'capital'    => $request->capital,
+            'currency'   => $request->currency,
+            'region'     => $request->region,
+            'subregion'  => $request->subregion,
+            'population' => $request->population,
+            'flag'       => $request->flag,
+            'latitude'   => $request->latitude,
+            'longitude'  => $request->longitude,
+        ]);
+
+        return redirect()
+            ->route('countries.index')
             ->with('success', 'Data berhasil diperbarui.');
     }
 
@@ -77,7 +124,8 @@ class CountryController extends Controller
     {
         $country->delete();
 
-        return redirect()->route('countries.index')
+        return redirect()
+            ->route('countries.index')
             ->with('success', 'Data berhasil dihapus.');
     }
 }

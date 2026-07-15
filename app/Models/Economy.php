@@ -4,15 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Currency extends Model
+class Economy extends Model
 {
     protected $fillable = [
         'country_id',
-        'code',
-        'name',
-        'symbol',
-        'exchange_rate',
-        'updated_at_rate'
+        'gdp',
+        'inflation',
+        'unemployment',
+        'export_value',
+        'import_value',
+        'growth',
+        'year',
     ];
 
     public function country()
