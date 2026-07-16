@@ -12,7 +12,11 @@ class CountryController extends Controller
         $search = $request->search;
 
         $countries = Country::when($search, function ($query) use ($search) {
-                $query->where('name', 'like', "%{$search}%");
+
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('code', 'like', "%{$search}%")
+                      ->orWhere('iso3', 'like', "%{$search}%");
+
             })
             ->orderBy('name')
             ->paginate(15);
@@ -29,12 +33,15 @@ class CountryController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'code' => 'required|unique:countries,code',
+            'code' => 'required|unique:countries,code|max:2',
+            'iso3' => 'nullable|max:3',
         ]);
 
         Country::create([
+
             'name'       => $request->name,
             'code'       => strtoupper($request->code),
+            'iso3'       => strtoupper($request->iso3),
             'capital'    => $request->capital,
             'currency'   => $request->currency,
             'region'     => $request->region,
@@ -43,6 +50,7 @@ class CountryController extends Controller
             'flag'       => $request->flag,
             'latitude'   => $request->latitude,
             'longitude'  => $request->longitude,
+
         ]);
 
         return redirect()
@@ -61,10 +69,15 @@ class CountryController extends Controller
 
             Country::updateOrCreate(
 
-                ['code' => $item['cca2']],
+                [
+                    'code' => $item['cca2']
+                ],
 
                 [
+
                     'name'       => $item['name']['common'] ?? '',
+                    'code'       => $item['cca2'] ?? '',
+                    'iso3'       => $item['cca3'] ?? '',
                     'capital'    => $item['capital'][0] ?? '',
                     'currency'   => isset($item['currencies'])
                         ? array_key_first($item['currencies'])
@@ -75,9 +88,11 @@ class CountryController extends Controller
                     'flag'       => $item['flag'] ?? '',
                     'latitude'   => $item['latlng'][0] ?? null,
                     'longitude'  => $item['latlng'][1] ?? null,
+
                 ]
 
             );
+
         }
 
         return redirect()
@@ -99,12 +114,15 @@ class CountryController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'code' => 'required|unique:countries,code,' . $country->id,
+            'code' => 'required|max:2|unique:countries,code,' . $country->id,
+            'iso3' => 'nullable|max:3',
         ]);
 
         $country->update([
+
             'name'       => $request->name,
             'code'       => strtoupper($request->code),
+            'iso3'       => strtoupper($request->iso3),
             'capital'    => $request->capital,
             'currency'   => $request->currency,
             'region'     => $request->region,
@@ -113,6 +131,7 @@ class CountryController extends Controller
             'flag'       => $request->flag,
             'latitude'   => $request->latitude,
             'longitude'  => $request->longitude,
+
         ]);
 
         return redirect()

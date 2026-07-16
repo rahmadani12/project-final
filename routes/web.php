@@ -45,6 +45,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/ports/{port}/edit', [PortController::class, 'edit'])->name('ports.edit');
     Route::put('/ports/{port}', [PortController::class, 'update'])->name('ports.update');
     Route::delete('/ports/{port}', [PortController::class, 'destroy'])->name('ports.destroy');
+    Route::post('/ports/update-api', [PortController::class, 'updateApi'])
+        ->name('ports.updateApi');
+
+    Route::resource('ports', PortController::class);
 
     // Weather
     Route::get('/weather', [WeatherController::class, 'index'])
@@ -66,7 +70,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Economy
     Route::resource('economy', EconomyController::class);
-
+    Route::post('/economy/update-api', [EconomyController::class, 'updateApi'])
+    ->name('economy.updateApi');
+        
     // News
     Route::resource('news', NewsController::class);
     Route::post(
@@ -109,6 +115,5 @@ Route::middleware(['auth'])->group(function () {
     ->name('map.index');
     
 });
-
 
 require __DIR__.'/auth.php';

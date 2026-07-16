@@ -47,4 +47,9 @@ return [
     'key' => env('GNEWS_API_KEY'),
     ],
 
+    'ports' => [
+        'url' => env('PORT_API_URL'),
+        'key' => env('PORT_API_KEY'),
+    ],
+
 ];

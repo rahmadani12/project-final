@@ -16,14 +16,28 @@
 
     <div class="flex justify-between items-center mb-6">
 
-        <a href="{{ route('economy.create') }}"
-           class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        <div class="flex gap-2">
 
-            + Tambah Data Economy
+            <a href="{{ route('economy.create') }}"
+               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
 
-        </a>
+                + Tambah Data Economy
 
-        <form method="GET" action="{{ route('economy.index') }}">
+            </a>
+
+            <form action="{{ route('economy.updateApi') }}" method="POST" class="mb-4">
+                @csrf
+
+                <button class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded">
+                    🔄 Update Economy API
+                </button>
+            </form>
+
+        </div>
+
+        <form method="GET"
+              action="{{ route('economy.index') }}"
+              class="flex gap-2">
 
             <input
                 type="text"
@@ -67,11 +81,11 @@
             <tr>
 
                 <td class="border p-2">
-                    {{ $economy->country->name }}
+                    {{ $economy->country->name ?? '-' }}
                 </td>
 
                 <td class="border p-2">
-                    {{ number_format($economy->gdp,2) }}
+                    {{ number_format($economy->gdp, 2) }}
                 </td>
 
                 <td class="border p-2">
@@ -89,30 +103,29 @@
                 <td class="border p-2 text-center">
 
                     <a href="{{ route('economy.show',$economy) }}"
-                       class="bg-blue-500 text-white px-2 py-1 rounded">
+                       class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded">
 
                         Detail
 
                     </a>
 
                     <a href="{{ route('economy.edit',$economy) }}"
-                       class="bg-yellow-500 text-white px-2 py-1 rounded">
+                       class="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded">
 
                         Edit
 
                     </a>
 
-                    <form
-                        action="{{ route('economy.destroy',$economy) }}"
-                        method="POST"
-                        class="inline">
+                    <form action="{{ route('economy.destroy',$economy) }}"
+                          method="POST"
+                          class="inline">
 
                         @csrf
                         @method('DELETE')
 
                         <button
                             onclick="return confirm('Hapus data ekonomi?')"
-                            class="bg-red-600 text-white px-2 py-1 rounded">
+                            class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded">
 
                             Hapus
 
@@ -129,7 +142,7 @@
             <tr>
 
                 <td colspan="6"
-                    class="text-center p-6">
+                    class="text-center p-6 text-gray-500">
 
                     Belum ada data ekonomi.
 

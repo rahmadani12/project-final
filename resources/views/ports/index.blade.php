@@ -20,52 +20,69 @@
 
 <div class="bg-white rounded shadow p-6">
 
-<div class="flex justify-between mb-5">
+<div class="flex justify-between items-center mb-5">
 
-<a href="{{ route('ports.create') }}"
-class="bg-blue-600 text-white px-4 py-2 rounded">
+    <div class="flex gap-2">
 
-Tambah Port
+        <a href="{{ route('ports.create') }}"
+           class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
 
-</a>
+            + Tambah Port
 
-<form>
+        </a>
 
-<input
-type="text"
-name="search"
-value="{{ request('search') }}"
-placeholder="Cari Port..."
-class="border rounded px-3 py-2">
+        <form action="{{ route('ports.updateApi') }}" method="POST">
 
-<button
-class="bg-gray-800 text-white px-4 py-2 rounded">
+            @csrf
 
-Cari
+            <button
+                class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
 
-</button>
+                🔄 Update Ports
 
-</form>
+            </button>
+
+        </form>
+
+    </div>
+
+    <form method="GET" action="{{ route('ports.index') }}" class="flex gap-2">
+
+        <input
+            type="text"
+            name="search"
+            value="{{ request('search') }}"
+            placeholder="Cari Port..."
+            class="border rounded px-3 py-2">
+
+        <button
+            class="bg-gray-800 text-white px-4 py-2 rounded">
+
+            Cari
+
+        </button>
+
+    </form>
 
 </div>
 
-<table class="w-full">
+<table class="w-full border-collapse">
 
 <thead>
 
 <tr class="bg-gray-100">
 
-<th class="p-3">Name</th>
+<th class="border p-3">Name</th>
 
-<th class="p-3">Country</th>
+<th class="border p-3">Country</th>
 
-<th class="p-3">City</th>
+<th class="border p-3">City</th>
 
-<th class="p-3">Type</th>
+<th class="border p-3">Type</th>
 
-<th class="p-3">Status</th>
+<th class="border p-3">Status</th>
 
-<th class="p-3">Action</th>
+<th class="border p-3">Action</th>
 
 </tr>
 
@@ -107,22 +124,23 @@ Cari
 
 </td>
 
-<td class="border p-3">
+<td class="border p-3 text-center">
 
 <a href="{{ route('ports.show', $port) }}"
    class="bg-blue-500 text-white px-3 py-1 rounded">
+
     Detail
-</a>
-
-<a
-href="{{ route('ports.edit',$port) }}"
-class="bg-yellow-500 text-white px-3 py-1 rounded">
-
-Edit
 
 </a>
 
-<form action="{{ route('ports.destroy',$port) }}"
+<a href="{{ route('ports.edit', $port) }}"
+   class="bg-yellow-500 text-white px-3 py-1 rounded">
+
+    Edit
+
+</a>
+
+<form action="{{ route('ports.destroy', $port) }}"
       method="POST"
       class="inline">
 

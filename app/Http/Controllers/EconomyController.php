@@ -4,10 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Country;
 use App\Models\Economy;
+use App\Services\EconomyService;
 use Illuminate\Http\Request;
 
 class EconomyController extends Controller
 {
+    protected $economyService;
+
+    public function __construct(EconomyService $economyService)
+    {
+        $this->economyService = $economyService;
+    }
+
     public function index(Request $request)
     {
         $search = $request->search;
@@ -34,14 +42,14 @@ class EconomyController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'country_id'    => 'required|exists:countries,id',
-            'gdp'           => 'required|numeric',
-            'inflation'     => 'required|numeric',
-            'unemployment'  => 'required|numeric',
-            'export_value'  => 'required|numeric',
-            'import_value'  => 'required|numeric',
-            'growth'        => 'required|numeric',
-            'year'          => 'required',
+            'country_id'   => 'required|exists:countries,id',
+            'gdp'          => 'nullable|numeric',
+            'inflation'    => 'nullable|numeric',
+            'unemployment' => 'nullable|numeric',
+            'export_value' => 'nullable|numeric',
+            'import_value' => 'nullable|numeric',
+            'growth'       => 'nullable|numeric',
+            'year'         => 'required',
         ]);
 
         Economy::create($request->all());
@@ -66,19 +74,20 @@ class EconomyController extends Controller
     public function update(Request $request, Economy $economy)
     {
         $request->validate([
-            'country_id'    => 'required|exists:countries,id',
-            'gdp'           => 'required|numeric',
-            'inflation'     => 'required|numeric',
-            'unemployment'  => 'required|numeric',
-            'export_value'  => 'required|numeric',
-            'import_value'  => 'required|numeric',
-            'growth'        => 'required|numeric',
-            'year'          => 'required',
+            'country_id'   => 'required|exists:countries,id',
+            'gdp'          => 'nullable|numeric',
+            'inflation'    => 'nullable|numeric',
+            'unemployment' => 'nullable|numeric',
+            'export_value' => 'nullable|numeric',
+            'import_value' => 'nullable|numeric',
+            'growth'       => 'nullable|numeric',
+            'year'         => 'required',
         ]);
 
         $economy->update($request->all());
 
-        return redirect()->route('economy.index')
+        return redirect()
+            ->route('economy.index')
             ->with('success', 'Data ekonomi berhasil diperbarui.');
     }
 
@@ -86,7 +95,47 @@ class EconomyController extends Controller
     {
         $economy->delete();
 
-        return redirect()->route('economy.index')
+        return redirect()
+            ->route('economy.index')
             ->with('success', 'Data ekonomi berhasil dihapus.');
+    }
+
+    /**
+     * Update data ekonomi dari World Bank API
+     */
+    public function updateApi()
+    {
+        $countries = Country::whereNotNull('iso3')->get();
+
+        foreach ($countries as $country) {
+
+            $economy = $this->economyService->getEconomy($country->iso3);
+
+            if (!$economy) {
+                continue;
+            }
+
+            Economy::updateOrCreate(
+
+                [
+                    'country_id' => $country->id,
+                    'year' => $economy['year'],
+                ],
+
+                [
+                    'gdp'            => $economy['gdp'],
+                    'inflation'      => $economy['inflation'],
+                    'unemployment'   => $economy['unemployment'],
+                    'export_value'   => $economy['export_value'],
+                    'import_value'   => $economy['import_value'],
+                    'growth'         => $economy['growth'],
+                ]
+
+            );
+        }
+
+        return redirect()
+            ->route('economy.index')
+            ->with('success', 'Data Economy berhasil diperbarui dari World Bank API.');
     }
 }

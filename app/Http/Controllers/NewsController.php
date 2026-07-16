@@ -104,13 +104,12 @@ class NewsController extends Controller
      */
     public function updateApi()
     {
-        // Batasi dulu agar tidak cepat menghabiskan kuota GNews
+        // Ambil 10 negara pertama
         $countries = Country::limit(10)->get();
 
         foreach ($countries as $country) {
 
             $result = $this->newsService->search($country->name);
-            dd($country->name, $result);
 
             if (!$result || !isset($result['articles'])) {
                 continue;
@@ -127,11 +126,11 @@ class NewsController extends Controller
                     [
                         'country_id'   => $country->id,
                         'title'        => $article['title'],
-                        'description'  => $article['description'] ?? '',
-                        'source'       => $article['source']['name'] ?? '',
+                        'source'       => $article['source']['name'] ?? 'GNews',
                         'category'     => 'General',
-                        'published_at' => $article['publishedAt'],
-                        'risk_level'   => 'Medium'
+                        'published_at' => \Carbon\Carbon::parse($article['publishedAt'])->toDateString(),
+                        'description'  => $article['description'] ?? '',
+                        'risk_level'   => 'Medium',
                     ]
 
                 );
