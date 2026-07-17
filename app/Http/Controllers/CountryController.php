@@ -2,11 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\CountryService;
 use App\Models\Country;
 use Illuminate\Http\Request;
 
 class CountryController extends Controller
 {
+    protected $countryService;
+
+    public function __construct(CountryService $countryService)
+    {
+        $this->countryService = $countryService;
+    }
+
     public function index(Request $request)
     {
         $search = $request->search;
@@ -60,35 +68,28 @@ class CountryController extends Controller
 
     public function import()
     {
-        $countries = json_decode(
-            file_get_contents(database_path('data/countries.json')),
-            true
-        );
+        $countries = $this->countryService->getCountries();
 
         foreach ($countries as $item) {
 
             Country::updateOrCreate(
 
                 [
-                    'code' => $item['cca2']
+                    'code' => $item['codes']['alpha_2'] ?? '',
                 ],
 
                 [
-
-                    'name'       => $item['name']['common'] ?? '',
-                    'code'       => $item['cca2'] ?? '',
-                    'iso3'       => $item['cca3'] ?? '',
-                    'capital'    => $item['capital'][0] ?? '',
-                    'currency'   => isset($item['currencies'])
-                        ? array_key_first($item['currencies'])
-                        : '',
+                    'name'       => $item['names']['common'] ?? '',
+                    'code'       => $item['codes']['alpha_2'] ?? '',
+                    'iso3'       => $item['codes']['alpha_3'] ?? '',
+                    'capital'    => $item['capital'] ?? '',
+                    'currency'   => $item['currencies'][0]['code'] ?? '',
                     'region'     => $item['region'] ?? '',
                     'subregion'  => $item['subregion'] ?? '',
                     'population' => $item['population'] ?? 0,
-                    'flag'       => $item['flag'] ?? '',
-                    'latitude'   => $item['latlng'][0] ?? null,
-                    'longitude'  => $item['latlng'][1] ?? null,
-
+                    'flag'       => $item['flag']['emoji'] ?? '',
+                    'latitude'   => $item['geography']['latitude'] ?? null,
+                    'longitude'  => $item['geography']['longitude'] ?? null,
                 ]
 
             );
@@ -97,8 +98,9 @@ class CountryController extends Controller
 
         return redirect()
             ->route('countries.index')
-            ->with('success', 'Data negara berhasil diimport.');
+            ->with('success', 'Countries berhasil diimport.');
     }
+
 
     public function show(Country $country)
     {

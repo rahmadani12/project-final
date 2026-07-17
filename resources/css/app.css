@@ -1,3 +1,127 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body{
+
+    background:#FFE6F0;
+
+    font-family:'Poppins',sans-serif;
+
+}
+
+.sidebar-link{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:14px 18px;
+
+    border-radius:14px;
+
+    transition:.3s;
+
+    font-size:17px;
+
+    font-weight:500;
+
+}
+
+.sidebar-link:hover{
+
+    background:#881144;
+
+}
+
+.sidebar-active{
+
+    background:#C24366;
+
+}
+
+.card-custom{
+
+    background:white;
+
+    border-radius:20px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+
+}
+
+.btn-primary{
+
+    background:#C24366;
+
+    color:white;
+
+    border-radius:12px;
+
+    transition:.3s;
+
+}
+
+.btn-primary:hover{
+
+    background:#881144;
+
+}
+
+.stat-card{
+
+    background:white;
+
+    border-radius:20px;
+
+    padding:25px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+
+    transition:.3s;
+
+}
+
+.stat-card:hover{
+
+    transform:translateY(-5px);
+
+}
+
+.sidebar-item{
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+    padding:14px 18px;
+
+    border-radius:16px;
+
+    color:white;
+
+    font-size:18px;
+
+    transition:.3s;
+
+    text-decoration:none;
+}
+
+.sidebar-item:hover{
+
+    background:#881144;
+
+    transform:translateX(5px);
+
+}
+
+.sidebar-item.active{
+
+    background:#C24366;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.2);
+
+    font-weight:600;
+
+}

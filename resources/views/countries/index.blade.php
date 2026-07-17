@@ -1,162 +1,290 @@
-@extends('layouts.master')
+@extends('layouts.app')
 
 @section('content')
 
-<h1 class="text-3xl font-bold mb-6">
-    🌍 Countries Management
-</h1>
+<div class="space-y-8">
 
-    <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    {{-- Header --}}
+    <div class="bg-white rounded-3xl shadow-lg p-8">
 
-            @if(session('success'))
-                <div class="mb-4 p-4 bg-green-100 text-green-700 rounded">
-                    {{ session('success') }}
-                </div>
-            @endif
+        <div class="flex justify-between items-center">
 
-            <div class="bg-white shadow rounded-lg p-6">
+            <div>
 
-                <div class="flex justify-between items-center mb-6">
+                <h1 class="text-4xl font-bold text-[#800021]">
 
-                    <a href="{{ route('countries.import') }}"
-                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    🌍 Countries Monitoring
 
-                        Import Countries
+                </h1>
 
-                    </a>
+                <p class="text-gray-500 mt-2">
 
-                    <form method="GET" action="{{ route('countries.index') }}">
+                    Monitor countries, economy, weather, currency and global risks.
 
-                        <input
-                            type="text"
-                            name="search"
-                            value="{{ request('search') }}"
-                            placeholder="Cari Negara..."
-                            class="border rounded px-3 py-2">
+                </p>
 
-                        <button
-                            class="bg-gray-800 text-white px-4 py-2 rounded">
+            </div>
 
-                            Cari
+            <form action="{{ route('countries.import') }}" method="POST">
 
-                        </button>
+                @csrf
 
-                    </form>
+                <button
+                    class="bg-[#C24366] hover:bg-[#881144] text-white px-8 py-4 rounded-2xl shadow">
 
-                </div>
+                    🔄 Sync Countries API
 
-                <table class="w-full border-collapse">
+                </button>
 
-                    <thead>
+            </form>
 
-                    <tr class="bg-gray-100">
+        </div>
 
-                        <th class="border p-3">Flag</th>
-                        <th class="border p-3">Country</th>
-                        <th class="border p-3">Capital</th>
-                        <th class="border p-3">Currency</th>
-                        <th class="border p-3">Population</th>
-                        <th class="border p-3">Action</th>
+    </div>
 
-                    </tr>
 
-                    </thead>
 
-                    <tbody>
+    {{-- Statistik --}}
 
-                    @forelse($countries as $country)
+    <div class="grid grid-cols-4 gap-6">
 
-                        <tr>
+        <div class="bg-white rounded-3xl p-6 shadow">
 
-                            <td class="border p-2 text-center">
-                                <img src="{{ $country->flag }}" width="40">
-                            </td>
+            <h2 class="text-gray-500">
 
-                            <td class="border p-2">
+                Total Countries
+
+            </h2>
+
+            <p class="text-5xl font-bold text-[#800021] mt-3">
+
+                {{ $countries->total() }}
+
+            </p>
+
+        </div>
+
+        <div class="bg-white rounded-3xl p-6 shadow">
+
+            <h2 class="text-gray-500">
+
+                Region
+
+            </h2>
+
+            <p class="text-5xl font-bold text-[#C24366] mt-3">
+
+                {{ $countries->pluck('region')->unique()->count() }}
+
+            </p>
+
+        </div>
+
+        <div class="bg-white rounded-3xl p-6 shadow">
+
+            <h2 class="text-gray-500">
+
+                Currency
+
+            </h2>
+
+            <p class="text-5xl font-bold text-pink-500 mt-3">
+
+                {{ $countries->pluck('currency')->unique()->count() }}
+
+            </p>
+
+        </div>
+
+        <div class="bg-white rounded-3xl p-6 shadow">
+
+            <h2 class="text-gray-500">
+
+                Population
+
+            </h2>
+
+            <p class="text-xl font-bold text-green-600 mt-4">
+
+                {{ number_format($countries->sum('population')) }}
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    {{-- Search --}}
+
+    <div class="bg-white rounded-3xl shadow p-6">
+
+        <form
+            action="{{ route('countries.index') }}"
+            method="GET"
+            class="grid grid-cols-12 gap-4">
+
+            <div class="col-span-9">
+
+                <input
+                    type="text"
+                    name="search"
+                    value="{{ request('search') }}"
+                    placeholder="Search country..."
+                    class="w-full border rounded-2xl px-5 py-4">
+
+            </div>
+
+            <div class="col-span-3">
+
+                <button
+                    class="w-full bg-[#800021] hover:bg-[#881144] text-white py-4 rounded-2xl">
+
+                    Search
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+
+    {{-- Cards --}}
+
+    <div class="grid grid-cols-4 gap-6">
+
+        @foreach($countries as $country)
+
+            <div
+                class="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition duration-300 overflow-hidden">
+
+                <div class="p-6">
+
+                    <div class="flex items-center gap-4">
+
+                        <div>
+
+                            <img
+                                src="https://flagcdn.com/w80/{{ strtolower($country->code) }}.png"
+                                alt="{{ $country->name }}"
+                                class="w-14 h-10 rounded-lg object-cover shadow border">
+
+                        </div>
+
+                        <div>
+
+                            <h2 class="font-bold text-xl">
+
                                 {{ $country->name }}
-                            </td>
 
-                            <td class="border p-2">
-                                {{ $country->capital }}
-                            </td>
+                            </h2>
 
-                            <td class="border p-2">
-                                {{ $country->currency }}
-                            </td>
+                            <p class="text-gray-500">
 
-                            <td class="border p-2">
-                                {{ number_format($country->population) }}
-                            </td>
+                                {{ $country->code }}
 
-                            <td class="border p-2 text-center">
+                                @if($country->iso3)
 
-                                <a
-                                    href="{{ route('countries.show',$country) }}"
-                                    class="bg-blue-500 text-white px-2 py-1 rounded">
+                                    • {{ $country->iso3 }}
 
-                                    Detail
+                                @endif
 
-                                </a>
+                            </p>
 
-                                <a
-                                    href="{{ route('countries.edit',$country) }}"
-                                    class="bg-yellow-500 text-white px-2 py-1 rounded">
+                        </div>
 
-                                    Edit
+                    </div>
 
-                                </a>
+                    <div class="mt-6 space-y-2">
 
-                                <form
-                                    action="{{ route('countries.destroy',$country) }}"
-                                    method="POST"
-                                    class="inline">
+                        <p>
 
-                                    @csrf
-                                    @method('DELETE')
+                            🌍 {{ $country->region }}
 
-                                    <button
-                                        onclick="return confirm('Hapus data?')"
-                                        class="bg-red-600 text-white px-2 py-1 rounded">
+                        </p>
 
-                                        Hapus
+                        <p>
 
-                                    </button>
+                            💰 {{ $country->currency }}
 
-                                </form>
+                        </p>
 
-                            </td>
+                        <p>
 
-                        </tr>
+                            👥 {{ number_format($country->population) }}
 
-                    @empty
+                        </p>
 
-                        <tr>
+                    </div>
 
-                            <td colspan="6"
-                                class="text-center p-6">
+                    <div class="mt-6">
 
-                                Belum ada data negara
+                        @php
 
-                            </td>
+                            $risk = ['SAFE','MEDIUM','HIGH'][rand(0,2)];
 
-                        </tr>
+                        @endphp
 
-                    @endforelse
+                        @if($risk=='SAFE')
 
-                    </tbody>
+                            <span class="bg-green-100 text-green-700 px-4 py-2 rounded-full">
 
-                </table>
+                                SAFE
 
-                <div class="mt-6">
+                            </span>
 
-                    {{ $countries->links() }}
+                        @elseif($risk=='MEDIUM')
+
+                            <span class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full">
+
+                                MEDIUM
+
+                            </span>
+
+                        @else
+
+                            <span class="bg-red-100 text-red-700 px-4 py-2 rounded-full">
+
+                                HIGH
+
+                            </span>
+
+                        @endif
+
+                    </div>
+
+                    <div class="mt-8">
+
+                        <a
+                            href="{{ route('countries.show',$country) }}"
+                            class="block text-center bg-[#C24366] hover:bg-[#881144] text-white py-3 rounded-xl">
+
+                            View Detail
+
+                        </a>
+
+                    </div>
 
                 </div>
 
             </div>
 
-        </div>
+        @endforeach
+
     </div>
+
+
+
+    <div class="mt-10">
+
+        {{ $countries->links() }}
+
+    </div>
+
+</div>
 
 @endsection

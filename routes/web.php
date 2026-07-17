@@ -25,13 +25,29 @@ Route::middleware(['auth'])->group(function () {
         ->name('dashboard');
 
     // Countries
-    Route::get('/countries', [CountryController::class, 'index'])->name('countries.index');
-    Route::post('/countries', [CountryController::class, 'store'])->name('countries.store');
-    Route::get('/countries/import', [CountryController::class, 'import'])->name('countries.import');
-    Route::get('/countries/{country}', [CountryController::class, 'show'])->name('countries.show');
-    Route::get('/countries/{country}/edit', [CountryController::class, 'edit'])->name('countries.edit');
-    Route::put('/countries/{country}', [CountryController::class, 'update'])->name('countries.update');
-    Route::delete('/countries/{country}', [CountryController::class, 'destroy'])->name('countries.destroy');
+    Route::get('/countries', [CountryController::class, 'index'])
+        ->name('countries.index');
+
+    Route::get('/countries/create', [CountryController::class, 'create'])
+        ->name('countries.create');
+
+    Route::post('/countries', [CountryController::class, 'store'])
+        ->name('countries.store');
+
+    Route::post('/countries/import', [CountryController::class, 'import'])
+        ->name('countries.import');
+
+    Route::get('/countries/{country}', [CountryController::class, 'show'])
+        ->name('countries.show');
+
+    Route::get('/countries/{country}/edit', [CountryController::class, 'edit'])
+        ->name('countries.edit');
+
+    Route::put('/countries/{country}', [CountryController::class, 'update'])
+        ->name('countries.update');
+
+    Route::delete('/countries/{country}', [CountryController::class, 'destroy'])
+        ->name('countries.destroy');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -41,7 +57,7 @@ Route::middleware(['auth'])->group(function () {
     // Ports
     Route::resource('ports', App\Http\Controllers\PortController::class);
     Route::get('/ports/{port}', [PortController::class, 'show'])
-    ->name('ports.show');
+        ->name('ports.show');
     Route::get('/ports/{port}/edit', [PortController::class, 'edit'])->name('ports.edit');
     Route::put('/ports/{port}', [PortController::class, 'update'])->name('ports.update');
     Route::delete('/ports/{port}', [PortController::class, 'destroy'])->name('ports.destroy');
@@ -85,7 +101,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('risk-score/{country}/calculate',
         [RiskScoreController::class,'calculate'])
         ->name('risk-score.calculate');
-    
+    Route::get('/risk-scores', [RiskScoreController::class, 'index'])
+        ->name('risk-scores.index');
+
     // Comparison
     Route::get('/comparison', [ComparisonController::class, 'index'])
     ->name('comparison.index');
@@ -102,6 +120,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/watchlist/{watchlist}',
     [WatchlistController::class,'destroy'])
     ->name('watchlist.destroy');
+
+    Route::get('/watchlists', [WatchlistController::class, 'index'])
+    ->name('watchlists.index');
 
     // Currency
     Route::resource('currency', CurrencyController::class);

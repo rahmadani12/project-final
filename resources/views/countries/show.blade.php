@@ -2,74 +2,130 @@
 
 @section('content')
 
-<h1 class="text-3xl font-bold mb-6">
-🌍 Detail Country
-</h1>
+<div class="bg-white rounded-3xl shadow-lg p-8">
 
-<div class="bg-white shadow rounded-lg p-6">
+    {{-- Header --}}
+    <div class="flex items-center gap-8 mb-8">
 
-    <table class="table-auto w-full">
+        {{-- Bendera --}}
+        <div class="flex-shrink-0">
 
-        <tr>
-            <th class="border p-3 w-56 text-left">Nama Negara</th>
-            <td class="border p-3">{{ $country->name }}</td>
-        </tr>
+            <img
+                src="https://flagcdn.com/w320/{{ strtolower($country->code) }}.png"
+                alt="{{ $country->name }}"
+                class="w-40 h-28 object-cover rounded-xl border shadow-lg">
 
-        <tr>
-            <th class="border p-3 text-left">Kode</th>
-            <td class="border p-3">{{ $country->code }}</td>
-        </tr>
+        </div>
 
-        <tr>
-            <th class="border p-3 text-left">Ibukota</th>
-            <td class="border p-3">{{ $country->capital }}</td>
-        </tr>
+        {{-- Informasi --}}
+        <div>
 
-        <tr>
-            <th class="border p-3 text-left">Mata Uang</th>
-            <td class="border p-3">{{ $country->currency }}</td>
-        </tr>
+            <h1 class="text-4xl font-bold text-[#800021]">
+                {{ $country->name }}
+            </h1>
 
-        <tr>
-            <th class="border p-3 text-left">Region</th>
-            <td class="border p-3">{{ $country->region }}</td>
-        </tr>
+            <p class="text-xl text-gray-500 mt-2">
+                {{ $country->code }} • {{ $country->capital }}
+            </p>
 
-        <tr>
-            <th class="border p-3 text-left">Sub Region</th>
-            <td class="border p-3">{{ $country->subregion }}</td>
-        </tr>
+            <div class="mt-4 flex flex-wrap gap-3">
 
-        <tr>
-            <th class="border p-3 text-left">Population</th>
-            <td class="border p-3">
-                {{ number_format($country->population) }}
-            </td>
-        </tr>
+                <span class="px-4 py-2 bg-pink-100 text-[#800021] rounded-full">
+                    🌍 {{ $country->region }}
+                </span>
 
-        <tr>
-            <th class="border p-3 text-left">Latitude</th>
-            <td class="border p-3">{{ $country->latitude }}</td>
-        </tr>
+                <span class="px-4 py-2 bg-blue-100 text-blue-700 rounded-full">
+                    📍 {{ $country->subregion }}
+                </span>
 
-        <tr>
-            <th class="border p-3 text-left">Longitude</th>
-            <td class="border p-3">{{ $country->longitude }}</td>
-        </tr>
+                <span class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full">
+                    💰 {{ $country->currency }}
+                </span>
 
-        <tr>
-            <th class="border p-3 text-left">Flag</th>
-            <td class="border p-3 text-4xl">
-                {{ $country->flag }}
-            </td>
-        </tr>
+            </div>
 
-    </table>
+        </div>
 
-    <div class="mt-6">
+    </div>
+
+    {{-- Detail --}}
+    <div class="grid grid-cols-2 gap-6">
+
+        <div class="bg-gray-50 rounded-xl p-5">
+
+            <h3 class="font-bold text-lg mb-4 text-[#800021]">
+                Informasi Umum
+            </h3>
+
+            <table class="w-full">
+
+                <tr>
+                    <td class="py-2 font-semibold">Nama</td>
+                    <td>{{ $country->name }}</td>
+                </tr>
+
+                <tr>
+                    <td class="py-2 font-semibold">Kode</td>
+                    <td>{{ $country->code }}</td>
+                </tr>
+
+                <tr>
+                    <td class="py-2 font-semibold">Ibukota</td>
+                    <td>{{ $country->capital }}</td>
+                </tr>
+
+                <tr>
+                    <td class="py-2 font-semibold">Mata Uang</td>
+                    <td>{{ $country->currency }}</td>
+                </tr>
+
+            </table>
+
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-5">
+
+            <h3 class="font-bold text-lg mb-4 text-[#800021]">
+                Lokasi
+            </h3>
+
+            <table class="w-full">
+
+                <tr>
+                    <td class="py-2 font-semibold">Region</td>
+                    <td>{{ $country->region }}</td>
+                </tr>
+
+                <tr>
+                    <td class="py-2 font-semibold">Sub Region</td>
+                    <td>{{ $country->subregion }}</td>
+                </tr>
+
+                <tr>
+                    <td class="py-2 font-semibold">Population</td>
+                    <td>{{ number_format($country->population) }}</td>
+                </tr>
+
+                <tr>
+                    <td class="py-2 font-semibold">Latitude</td>
+                    <td>{{ $country->latitude }}</td>
+                </tr>
+
+                <tr>
+                    <td class="py-2 font-semibold">Longitude</td>
+                    <td>{{ $country->longitude }}</td>
+                </tr>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <div class="mt-8">
 
         <a href="{{ route('countries.index') }}"
-           class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">
+            class="bg-[#800021] hover:bg-[#881144] text-white px-6 py-3 rounded-xl transition">
 
             ← Kembali
 

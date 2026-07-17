@@ -17,17 +17,17 @@
 
 <div class="flex min-h-screen">
 
-    @include('layouts.partials.sidebar')
+    @include('layouts.sidebar')
 
     <div class="flex-1">
 
-        @include('layouts.partials.navbar')
+        @include('layouts.navbar')
 
         <main class="p-6">
             @yield('content')
         </main>
 
-        @include('layouts.partials.footer')
+        @include('layouts.footer')
 
     </div>
 
