@@ -55,7 +55,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Ports
-    Route::resource('ports', App\Http\Controllers\PortController::class);
+    Route::resource('ports', PortController::class);
     Route::get('/ports/{port}', [PortController::class, 'show'])
         ->name('ports.show');
     Route::get('/ports/{port}/edit', [PortController::class, 'edit'])->name('ports.edit');
@@ -64,25 +64,15 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/ports/update-api', [PortController::class, 'updateApi'])
         ->name('ports.updateApi');
 
-    Route::resource('ports', PortController::class);
-
     // Weather
-    Route::get('/weather', [WeatherController::class, 'index'])
-    ->name('weather.index');
 
-    Route::post('/weather/update', [WeatherController::class, 'updateAll'])
-    ->name('weather.update');
     Route::resource('weather', WeatherController::class);
 
-    Route::post(
-        '/weather/update',
-        [WeatherController::class,'updateAll']
-    )->name('weather.update');
+    Route::post('/weather/update-all', [WeatherController::class, 'updateAll'])
+        ->name('weather.updateAll');
 
-    Route::get(
-        '/weather/{weather}/refresh',
-        [WeatherController::class,'refresh']
-    )->name('weather.refresh');
+    Route::get('/weather/{weather}/refresh', [WeatherController::class, 'refresh'])
+        ->name('weather.refresh');
 
     // Economy
     Route::resource('economy', EconomyController::class);
@@ -98,9 +88,17 @@ Route::middleware(['auth'])->group(function () {
 
     // Risk Score
     Route::resource('risk-score', RiskScoreController::class);
-    Route::post('risk-score/{country}/calculate',
-        [RiskScoreController::class,'calculate'])
-        ->name('risk-score.calculate');
+
+    Route::post(
+        '/risk-score/{country}/calculate',
+        [RiskScoreController::class, 'calculate']
+    )->name('risk-score.calculate');
+
+    Route::post(
+        '/risk-score/calculate-all',
+        [RiskScoreController::class, 'calculateAll']
+    )->name('risk-score.calculateAll');
+
     Route::get('/risk-scores', [RiskScoreController::class, 'index'])
         ->name('risk-scores.index');
 
@@ -121,8 +119,8 @@ Route::middleware(['auth'])->group(function () {
     [WatchlistController::class,'destroy'])
     ->name('watchlist.destroy');
 
-    Route::get('/watchlists', [WatchlistController::class, 'index'])
-    ->name('watchlists.index');
+    Route::get('/watchlist/{watchlist}', [WatchlistController::class, 'show'])
+    ->name('watchlist.show');
 
     // Currency
     Route::resource('currency', CurrencyController::class);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Port;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class PortController extends Controller
 {
@@ -72,5 +73,40 @@ class PortController extends Controller
         return redirect()
             ->route('ports.index')
             ->with('success', 'Port berhasil dihapus.');
+    }
+
+    public function updateApi()
+    {
+        $path = storage_path('app/data/ports.json');
+
+        if (!File::exists($path)) {
+            return back()->with('error', 'File ports.json tidak ditemukan.');
+        }
+
+        $ports = json_decode(File::get($path), true);
+
+        foreach ($ports as $port) {
+
+            Port::updateOrCreate(
+
+                [
+                    'name' => $port['name']
+                ],
+
+                [
+                    'country' => $port['country'],
+                    'city' => $port['city'],
+                    'type' => $port['type'],
+                    'latitude' => $port['latitude'],
+                    'longitude' => $port['longitude'],
+                    'status' => $port['status'],
+                ]
+
+            );
+        }
+
+        return redirect()
+            ->route('ports.index')
+            ->with('success', 'Port berhasil diperbarui.');
     }
 }

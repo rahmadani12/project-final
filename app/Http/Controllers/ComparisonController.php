@@ -2,24 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use App\Models\Country;
 use App\Models\RiskScore;
 
 class ComparisonController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $comparisons = \App\Models\RiskScore::with('country')
-            ->orderByDesc('total_score')
+        $countries = Country::orderBy('name')->get();
+
+        $selected = $request->input('countries', []);
+
+        $comparison = RiskScore::with('country')
+            ->whereIn('country_id', $selected)
             ->get();
 
-        $labels = $comparisons->pluck('country.name');
-
-        $scores = $comparisons->pluck('total_score');
-
         return view('comparison.index', compact(
-            'comparisons',
-            'labels',
-            'scores'
+            'countries',
+            'comparison',
+            'selected'
         ));
-    }
+}
 }

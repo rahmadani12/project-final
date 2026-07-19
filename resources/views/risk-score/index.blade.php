@@ -2,9 +2,48 @@
 
 @section('content')
 
-<h1 class="text-3xl font-bold mb-6">
-    ⚠️ Risk Score Management
-</h1>
+<div class="bg-pink-50 rounded-2xl p-8">
+
+    {{-- Header --}}
+    <div class="flex items-center gap-4 mb-8">
+
+        <div class="text-6xl">
+            ⚠️
+        </div>
+
+        <div>
+
+            <h1 class="text-5xl font-bold text-slate-800">
+                Risk Score Management
+            </h1>
+
+            <p class="text-gray-500 mt-2">
+                Calculate country risk based on Weather, Economy and News.
+            </p>
+
+        </div>
+
+    </div>
+
+   <div class="flex gap-3 mb-6">
+
+        <form action="{{ route('risk-score.calculateAll') }}" method="POST">
+
+            @csrf
+
+            <button
+                onclick="return confirm('Hitung semua negara?')"
+                class="inline-flex items-center px-5 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold">
+
+                <i class="fas fa-sync-alt mr-2"></i>
+
+                Hitung Semua
+
+            </button>
+
+        </form>
+
+    </div>
 
 @if(session('success'))
 <div class="bg-green-100 text-green-700 p-4 rounded mb-5">
@@ -40,16 +79,12 @@
 
     <tbody>
 
-    @forelse($countries as $country)
-
-        @php
-            $risk = $country->riskScores->first();
-        @endphp
+    @forelse($riskScores as $risk)
 
         <tr>
 
             <td class="border p-2">
-                {{ $country->name }}
+                {{ $risk->country->name ?? '-' }}
             </td>
 
             <td class="border p-2 text-center">
@@ -70,33 +105,23 @@
 
             <td class="border p-2 text-center">
 
-                @if($risk)
+                @if($risk->risk_level == 'High')
 
-                    @if($risk->risk_level=='High')
+                    <span class="bg-red-600 text-white px-3 py-1 rounded">
+                        🔴 High
+                    </span>
 
-                        <span class="bg-red-600 text-white px-3 py-1 rounded">
+                @elseif($risk->risk_level == 'Medium')
 
-                            🔴 High
+                    <span class="bg-yellow-500 text-white px-3 py-1 rounded">
+                        🟡 Medium
+                    </span>
 
-                        </span>
+                @elseif($risk->risk_level == 'Low')
 
-                    @elseif($risk->risk_level=='Medium')
-
-                        <span class="bg-yellow-500 text-white px-3 py-1 rounded">
-
-                            🟡 Medium
-
-                        </span>
-
-                    @else
-
-                        <span class="bg-green-600 text-white px-3 py-1 rounded">
-
-                            🟢 Low
-
-                        </span>
-
-                    @endif
+                    <span class="bg-green-600 text-white px-3 py-1 rounded">
+                        🟢 Low
+                    </span>
 
                 @else
 
@@ -106,12 +131,12 @@
 
             </td>
 
-            <td class="border p-2 text-center">
+            <td class="px-6 py-5 text-center">
 
                 @if($risk)
 
                     <a href="{{ route('risk-score.show',$risk) }}"
-                       class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">
+                    class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg">
 
                         Detail
 
@@ -119,17 +144,31 @@
 
                 @endif
 
-                <form
-                    action="{{ route('risk-score.calculate',$country) }}"
+                <form action="{{ route('risk-score.calculate',$risk) }}"
                     method="POST"
                     class="inline">
 
                     @csrf
 
                     <button
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg">
 
                         Hitung
+
+                    </button>
+
+                </form>
+
+                <form action="{{ route('watchlist.store',$risk) }}"
+                    method="POST"
+                    class="inline">
+
+                    @csrf
+
+                    <button
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-lg">
+
+                        ⭐ Watchlist
 
                     </button>
 
@@ -139,12 +178,11 @@
 
         </tr>
 
-    @empty
+        @empty
 
         <tr>
 
-            <td colspan="7"
-                class="text-center p-6">
+            <td colspan="7" class="text-center p-6">
 
                 Belum ada data.
 
@@ -152,11 +190,28 @@
 
         </tr>
 
-    @endforelse
+        @endforelse
 
     </tbody>
 
 </table>
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mt-6">
+
+        <div class="text-sm text-gray-600 mb-3 md:mb-0">
+            Menampilkan
+            <span class="font-semibold">{{ $riskScores->firstItem() }}</span>
+            -
+            <span class="font-semibold">{{ $riskScores->lastItem() }}</span>
+            dari
+            <span class="font-semibold">{{ $riskScores->total() }}</span>
+            data
+        </div>
+
+        <div>
+            {{ $riskScores->links() }}
+        </div>
+
+    </div>
 
 </div>
 

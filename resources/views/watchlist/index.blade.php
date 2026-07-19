@@ -2,9 +2,78 @@
 
 @section('content')
 
-<h1 class="text-3xl font-bold mb-6">
-⭐ Watchlist
+<div class="bg-pink-50 rounded-2xl p-8">
+
+<div class="flex items-center gap-4 mb-8">
+
+<div class="text-6xl">
+
+⭐
+
+</div>
+
+<div>
+
+<h1 class="text-5xl font-bold">
+
+Watchlist
+
 </h1>
+
+<p class="text-gray-500">
+
+Monitor your selected countries.
+
+</p>
+
+</div>
+
+</div>
+
+<div class="bg-white rounded-2xl shadow">
+
+<div class="flex justify-between items-center p-6 border-b">
+
+    <div>
+
+        <h2 class="text-xl font-bold">
+
+            Watchlist Countries
+
+        </h2>
+
+        <p class="text-gray-500 text-sm">
+
+            Monitor selected countries.
+
+        </p>
+
+    </div>
+
+    <form action="{{ route('watchlist.index') }}" method="GET">
+
+        <div class="flex">
+
+            <input
+                type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Cari Negara..."
+                class="border rounded-l-xl px-4 py-3 w-72">
+
+            <button
+                class="bg-slate-800 hover:bg-slate-900 text-white px-6 rounded-r-xl">
+
+                Cari
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
 
 @if(session('success'))
 <div class="bg-green-100 text-green-700 p-4 rounded mb-5">
@@ -12,136 +81,189 @@
 </div>
 @endif
 
-<div class="bg-white rounded-lg shadow p-6">
+<div class="overflow-x-auto">
 
-<table class="w-full border-collapse">
+<table class="min-w-full">
 
-<thead>
+    <thead class="bg-gray-50">
 
-<tr class="bg-gray-100">
+        <tr>
 
-<th class="border p-3">Country</th>
+            <th class="px-6 py-4 text-center">No</th>
 
-<th class="border p-3">Capital</th>
+            <th class="px-6 py-4 text-left">Country</th>
 
-<th class="border p-3">Region</th>
+            <th class="px-6 py-4 text-left">Capital</th>
 
-<th class="border p-3">Risk Level</th>
+            <th class="px-6 py-4 text-left">Region</th>
 
-<th class="border p-3">Action</th>
+            <th class="px-6 py-4 text-center">Weather</th>
 
-</tr>
+            <th class="px-6 py-4 text-center">Risk Level</th>
 
-</thead>
+            <th class="px-6 py-4 text-center">Total Risk</th>
 
-<tbody>
+            <th class="px-6 py-4 text-center">Action</th>
 
-@forelse($watchlists as $watch)
+        </tr>
 
-<tr>
+    </thead>
 
-<td class="border p-2">
+    <tbody>
 
-{{ $watch->country->name }}
+        @forelse($watchlists as $watch)
 
-</td>
+        @php
+            $weather = $watch->country->weatherData->first();
+            $risk = $watch->country->riskScores->first();
+        @endphp
 
-<td class="border p-2">
+        <tr class="border-b hover:bg-gray-50">
 
-{{ $watch->country->capital }}
+            <td class="px-6 py-4 text-center">
 
-</td>
+                {{ $loop->iteration + ($watchlists->currentPage()-1) * $watchlists->perPage() }}
 
-<td class="border p-2">
+            </td>
 
-{{ $watch->country->region }}
+            <td class="px-6 py-4">
 
-</td>
+                {{ $watch->country->name }}
 
-<td class="border p-2">
+            </td>
 
-@php
+            <td class="px-6 py-4">
 
-$risk = $watch->country->riskScores->first();
+                {{ $watch->country->capital }}
 
-@endphp
+            </td>
 
-@if($risk)
+            <td class="px-6 py-4">
 
-@if($risk->risk_level=="High")
+                {{ $watch->country->region }}
 
-<span class="bg-red-600 text-white px-3 py-1 rounded">
+            </td>
 
-🔴 High
+            <td class="px-6 py-4 text-center">
 
-</span>
+                {{ $weather->condition ?? '-' }}
 
-@elseif($risk->risk_level=="Medium")
+            </td>
 
-<span class="bg-yellow-500 text-white px-3 py-1 rounded">
+            <td class="px-6 py-4 text-center">
 
-🟡 Medium
+                @if($risk)
 
-</span>
+                    @if($risk->risk_level=="High")
 
-@else
+                        <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full">
 
-<span class="bg-green-600 text-white px-3 py-1 rounded">
+                            🔴 High
 
-🟢 Low
+                        </span>
 
-</span>
+                    @elseif($risk->risk_level=="Medium")
 
-@endif
+                        <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">
 
-@else
+                            🟡 Medium
 
--
+                        </span>
 
-@endif
+                    @else
 
-</td>
+                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full">
 
-<td class="border p-2">
+                            🟢 Low
 
-<form action="{{ route('watchlist.destroy',$watch) }}"
-      method="POST">
+                        </span>
 
-@csrf
+                    @endif
 
-@method('DELETE')
+                @else
 
-<button
-class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">
+                    -
 
-Hapus
+                @endif
 
-</button>
+            </td>
 
-</form>
+            <td class="px-6 py-4 text-center font-bold text-blue-600">
 
-</td>
+                {{ $risk->total_score ?? '-' }}
 
-</tr>
+            </td>
 
-@empty
+            <td class="text-center">
 
-<tr>
+                <a href="{{ route('watchlist.show',$watch) }}"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded">
 
-<td colspan="5"
-class="text-center p-6">
+                    Detail
 
-Belum ada negara di Watchlist.
+                </a>
 
-</td>
+                <form
+                    action="{{ route('watchlist.destroy',$watch) }}"
+                    method="POST"
+                    class="inline">
 
-</tr>
+                    @csrf
+                    @method('DELETE')
 
-@endforelse
+                    <button
+                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded">
 
-</tbody>
+                        Hapus
+
+                    </button>
+
+                </form>
+
+            </td>
+        </tr>
+
+        @empty
+
+        <tr>
+
+            <td colspan="8" class="text-center py-8">
+
+                Belum ada negara di Watchlist.
+
+            </td>
+
+        </tr>
+
+        @endforelse
+
+    </tbody>
 
 </table>
+
+</div>
+
+<div class="flex justify-between items-center p-6 border-t">
+
+    <div class="text-gray-500">
+
+        Menampilkan
+
+        {{ $watchlists->firstItem() ?? 0 }}
+
+        -
+
+        {{ $watchlists->lastItem() ?? 0 }}
+
+        dari
+
+        {{ $watchlists->total() }}
+
+        data
+
+    </div>
+
+    {{ $watchlists->links() }}
 
 </div>
 

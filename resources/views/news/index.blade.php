@@ -2,9 +2,27 @@
 
 @section('content')
 
-<h1 class="text-3xl font-bold mb-6">
-    📰 News Management
-</h1>
+<div class="bg-pink-50 rounded-2xl p-8">
+
+    <div class="flex items-center gap-4 mb-8">
+
+        <div class="text-5xl">
+            📰
+        </div>
+
+        <div>
+
+            <h1 class="text-5xl font-bold text-slate-800">
+                News Management
+            </h1>
+
+            <p class="text-gray-500 mt-2">
+                Manage global news and supply chain events.
+            </p>
+
+        </div>
+
+    </div>
 
 @if(session('success'))
 <div class="bg-green-100 text-green-700 p-4 rounded mb-5">
@@ -18,14 +36,14 @@
 </div>
 @endif
 
-<div class="bg-white rounded-lg shadow p-6">
+<div class="bg-white rounded-2xl shadow-lg overflow-hidden">
 
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex justify-between items-center p-6 border-b">
 
         <div class="flex gap-2">
 
             <a href="{{ route('news.create') }}"
-               class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+               class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold">
 
                 + Tambah Berita
 
@@ -37,7 +55,7 @@
                 @csrf
 
                 <button
-                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold">
 
                     🔄 Update News API
 
@@ -56,10 +74,10 @@
                 name="search"
                 value="{{ request('search') }}"
                 placeholder="Cari Judul / Negara..."
-                class="border rounded px-3 py-2">
+                class="border border-gray-300 rounded-l-xl px-4 py-3 w-72">
 
             <button
-                class="bg-gray-800 text-white px-4 py-2 rounded">
+                class="bg-slate-800 hover:bg-slate-900 text-white px-6 rounded-r-xl">
 
                 Cari
 
@@ -69,19 +87,24 @@
 
     </div>
 
-    <table class="w-full border-collapse">
+    <div class="overflow-x-auto">
 
-        <thead>
+    <table class="min-w-full">
+
+        <thead class="bg-gray-50">
 
         <tr class="bg-gray-100">
+            <th class="px-6 py-4 text-left">
+            No
+            </th>
 
-            <th class="border p-3">Country</th>
-            <th class="border p-3">Title</th>
-            <th class="border p-3">Category</th>
-            <th class="border p-3">Source</th>
-            <th class="border p-3">Risk</th>
-            <th class="border p-3">Published</th>
-            <th class="border p-3">Action</th>
+            <th class="px-6 py-5">Country</th>
+            <th class="px-6 py-5">Title</th>
+            <th class="px-6 py-5">Category</th>
+            <th class="px-6 py-5">Source</th>
+            <th class="px-6 py-5">Risk</th>
+            <th class="px-6 py-5">Published</th>
+            <th class="px-6 py-5">Action</th>
 
         </tr>
 
@@ -92,62 +115,88 @@
         @forelse($news as $item)
 
         <tr>
+            
+            <td class="px-6 py-5">
+            {{ $loop->iteration + ($news->currentPage()-1) * $news->perPage() }}
+            </td>
 
-            <td class="border p-2">
+            <td class="px-6 py-5">
                 {{ $item->country->name ?? '-' }}
             </td>
 
-            <td class="border p-2">
-                {{ $item->title }}
+            <td class="px-6 py-5">
+                <div class="max-w-md font-medium">
+                {{ \Illuminate\Support\Str::limit($item->title,70) }}
+                </div>
             </td>
 
-            <td class="border p-2">
+            <td class="px-6 py-5">
+                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
                 {{ $item->category }}
+                </span>
             </td>
 
-            <td class="border p-2">
+            <td class="px-6 py-5">
+                <span class="font-semibold text-gray-700">
                 {{ $item->source }}
+                </span>
             </td>
 
             <td class="border p-2 text-center">
 
-                @if($item->risk_level == 'High')
+                @if($item->risk_level=='High')
 
-                    <span class="bg-red-500 text-white px-2 py-1 rounded">
-                        🔴 High
-                    </span>
+                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full">
 
-                @elseif($item->risk_level == 'Medium')
+                🔴 High
 
-                    <span class="bg-yellow-500 text-white px-2 py-1 rounded">
-                        🟡 Medium
-                    </span>
+                </span>
+
+                @elseif($item->risk_level=='Medium')
+
+                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">
+
+                🟡 Medium
+
+                </span>
 
                 @else
 
-                    <span class="bg-green-500 text-white px-2 py-1 rounded">
-                        🟢 Low
-                    </span>
+                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full">
+
+                🟢 Low
+
+                </span>
 
                 @endif
 
             </td>
 
-            <td class="border p-2">
-                {{ \Carbon\Carbon::parse($item->published_at)->format('d M Y H:i') }}
+            <td class="px-6 py-5">
+                <div>
+
+                {{ \Carbon\Carbon::parse($item->published_at)->format('d M Y') }}
+
+                </div>
+
+                <div class="text-gray-500 text-sm">
+
+                {{ \Carbon\Carbon::parse($item->published_at)->format('H:i') }}
+
+                </div>
             </td>
 
             <td class="border p-2 text-center">
 
                 <a href="{{ route('news.show', $item) }}"
-                   class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded">
+                   class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg">
 
                     Detail
 
                 </a>
 
                 <a href="{{ route('news.edit', $item) }}"
-                   class="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded">
+                   class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-lg">
 
                     Edit
 
@@ -163,7 +212,7 @@
 
                     <button
                         onclick="return confirm('Yakin ingin menghapus berita ini?')"
-                        class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded">
+                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg">
 
                         Hapus
 
@@ -193,9 +242,31 @@
 
     </table>
 
-    <div class="mt-6">
+    <div class="flex justify-between items-center p-6 border-t">
 
-        {{ $news->links() }}
+    <div class="text-gray-500">
+
+    Menampilkan
+
+    {{ $news->firstItem() }}
+
+    -
+
+    {{ $news->lastItem() }}
+
+    dari
+
+    {{ $news->total() }}
+
+    data
+
+    </div>
+
+    {{ $news->links() }}
+
+    </div>
+
+    </div>
 
     </div>
 

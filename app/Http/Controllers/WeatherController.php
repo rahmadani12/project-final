@@ -21,23 +21,36 @@ class WeatherController extends Controller
      */
     public function index(Request $request)
     {
-        $search = $request->search;
+        $query = WeatherData::with('country');
 
-        $weatherData = WeatherData::with('country')
-            ->when($search, function ($query) use ($search) {
-                $query->where('city', 'like', "%{$search}%")
-                      ->orWhereHas('country', function ($q) use ($search) {
-                          $q->where('name', 'like', "%{$search}%");
-                      });
-            })
-            ->orderBy('city')
-            ->paginate(15);
+        if ($request->filled('search')) {
 
-        return view('weather.index', compact('weatherData', 'search'));
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+
+                $q->where('city', 'like', "%{$search}%")
+                  ->orWhere('weather', 'like', "%{$search}%")
+                  ->orWhereHas('country', function ($country) use ($search) {
+
+                      $country->where('name', 'like', "%{$search}%");
+
+                  });
+
+            });
+
+        }
+
+        $weather = $query
+            ->orderBy('country_id')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('weather.index', compact('weather'));
     }
 
     /**
-     * Form tambah
+     * Form Tambah
      */
     public function create()
     {
@@ -47,7 +60,7 @@ class WeatherController extends Controller
     }
 
     /**
-     * Simpan manual
+     * Simpan
      */
     public function store(Request $request)
     {
@@ -80,11 +93,13 @@ class WeatherController extends Controller
      */
     public function show(WeatherData $weather)
     {
+        $weather->load('country');
+
         return view('weather.show', compact('weather'));
     }
 
     /**
-     * Form edit
+     * Form Edit
      */
     public function edit(WeatherData $weather)
     {
@@ -94,7 +109,7 @@ class WeatherController extends Controller
     }
 
     /**
-     * Update manual
+     * Update Manual
      */
     public function update(Request $request, WeatherData $weather)
     {
@@ -135,13 +150,12 @@ class WeatherController extends Controller
     }
 
     /**
-     * Update semua negara dari OpenWeather API
+     * Update Semua Data dari API
      */
     public function updateAll()
     {
         $countries = Country::whereNotNull('latitude')
             ->whereNotNull('longitude')
-            ->limit(20) // sementara 20 dulu agar tidak melebihi batas API
             ->get();
 
         foreach ($countries as $country) {
@@ -162,26 +176,36 @@ class WeatherController extends Controller
                 ],
 
                 [
-                    'city' => $data['name'],
-                    'temperature' => $data['main']['temp'],
-                    'humidity' => $data['main']['humidity'],
-                    'wind_speed' => $data['wind']['speed'],
-                    'weather' => $data['weather'][0]['main'],
+                    'city' => $data['name'] ?? null,
+                    'temperature' => $data['main']['temp'] ?? 0,
+                    'humidity' => $data['main']['humidity'] ?? 0,
+                    'wind_speed' => $data['wind']['speed'] ?? 0,
+                    'weather' => $data['weather'][0]['main'] ?? '-',
                     'updated_at_weather' => now()
                 ]
+
             );
         }
 
         return redirect()
             ->route('weather.index')
-            ->with('success', 'Weather berhasil diperbarui dari OpenWeather API.');
+            ->with('success', 'Weather berhasil diperbarui.');
     }
 
     /**
-     * Update satu negara dari API
+     * Update Satu Negara
      */
     public function refresh(WeatherData $weather)
     {
+        if (!$weather->country) {
+
+            return back()->with(
+                'error',
+                'Country tidak ditemukan.'
+            );
+
+        }
+
         $country = $weather->country;
 
         $data = $this->weatherService->getWeather(
@@ -193,19 +217,25 @@ class WeatherController extends Controller
 
             $weather->update([
 
-                'city' => $data['name'],
-                'temperature' => $data['main']['temp'],
-                'humidity' => $data['main']['humidity'],
-                'wind_speed' => $data['wind']['speed'],
-                'weather' => $data['weather'][0]['main'],
+                'city' => $data['name'] ?? null,
+                'temperature' => $data['main']['temp'] ?? 0,
+                'humidity' => $data['main']['humidity'] ?? 0,
+                'wind_speed' => $data['wind']['speed'] ?? 0,
+                'weather' => $data['weather'][0]['main'] ?? '-',
                 'updated_at_weather' => now()
 
             ]);
+
         }
 
         return back()->with(
             'success',
             'Weather berhasil diperbarui.'
         );
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
     }
 }

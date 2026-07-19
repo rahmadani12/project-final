@@ -15,4 +15,14 @@ class Port extends Model
         'longitude',
         'status',
     ];
+
+    public function routesFrom()
+    {
+        return $this->hasMany(ShippingRoute::class,'origin_port_id');
+    }
+
+    public function routesTo()
+    {
+        return $this->hasMany(ShippingRoute::class,'destination_port_id');
+    }
 }

@@ -10,30 +10,51 @@ class WatchlistController extends Controller
 {
     public function index()
     {
-        $watchlists = Watchlist::with('country')
-            ->where('user_id',Auth::id())
-            ->get();
+        $watchlists = Watchlist::with([
+            'country.riskScores',
+            'country.weatherData',
+            'country.news'
+        ])
+        ->latest()
+        ->paginate(10);
 
-        return view('watchlist.index',compact('watchlists'));
+        return view(
+            'watchlist.index',
+            compact('watchlists')
+        );
     }
 
     public function store(Country $country)
     {
-        Watchlist::firstOrCreate([
-
-            'user_id'=>Auth::id(),
-
-            'country_id'=>$country->id
-
+        Watchlist::create([
+            'user_id'    => Auth::id(),
+            'country_id' => $country->id,
         ]);
 
-        return back()->with('success','Ditambahkan ke Watchlist');
+        return redirect()
+            ->route('watchlist.index')
+            ->with('success', 'Negara berhasil ditambahkan ke Watchlist.');
     }
 
     public function destroy(Watchlist $watchlist)
     {
         $watchlist->delete();
 
-        return back()->with('success','Watchlist dihapus');
+        return back()->with(
+            'success',
+            'Watchlist berhasil dihapus.'
+        );
+    }
+
+    public function show(Watchlist $watchlist)
+    {
+        $watchlist->load([
+            'country',
+            'country.weatherData',
+            'country.economies',
+            'country.riskScores',
+        ]);
+
+        return view('watchlist.show', compact('watchlist'));
     }
 }

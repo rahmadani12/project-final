@@ -43,6 +43,7 @@
 </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-ant-path/dist/leaflet-ant-path.min.js"></script>
 
     @stack('scripts')
 

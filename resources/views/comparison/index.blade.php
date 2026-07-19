@@ -2,172 +2,254 @@
 
 @section('content')
 
-<h1 class="text-3xl font-bold mb-6">
-    📊 Country Comparison
-</h1>
+<div class="bg-pink-50 rounded-2xl p-8">
 
-{{-- Statistik --}}
-<div class="grid grid-cols-3 gap-6 mb-6">
+    <div class="flex items-center gap-4 mb-8">
 
-    <div class="bg-red-100 rounded-lg shadow p-5">
+        <div class="text-6xl">
+            📊
+        </div>
 
-        <h2 class="text-lg font-bold text-red-700">
-            High Risk
-        </h2>
+        <div>
 
-        <p class="text-4xl font-bold mt-2">
-            {{ $comparisons->where('risk_level','High')->count() }}
-        </p>
+            <h1 class="text-5xl font-bold text-slate-800">
+                Country Comparison
+            </h1>
 
-    </div>
+            <p class="text-gray-500 mt-2">
+                Compare risk indicators between countries.
+            </p>
 
-    <div class="bg-yellow-100 rounded-lg shadow p-5">
-
-        <h2 class="text-lg font-bold text-yellow-700">
-            Medium Risk
-        </h2>
-
-        <p class="text-4xl font-bold mt-2">
-            {{ $comparisons->where('risk_level','Medium')->count() }}
-        </p>
+        </div>
 
     </div>
 
-    <div class="bg-green-100 rounded-lg shadow p-5">
+    <div class="bg-white rounded-2xl shadow p-6">
 
-        <h2 class="text-lg font-bold text-green-700">
-            Low Risk
-        </h2>
+        <form method="GET"
+              action="{{ route('comparison.index') }}">
 
-        <p class="text-4xl font-bold mt-2">
-            {{ $comparisons->where('risk_level','Low')->count() }}
-        </p>
+            <div class="grid grid-cols-4 gap-4">
+
+                <select
+                    name="countries[]"
+                    class="border rounded-xl p-3">
+
+                    <option value="">Select Country</option>
+
+                    @foreach($countries as $country)
+
+                        <option
+                            value="{{ $country->id }}"
+                            {{ in_array($country->id,$selected) ? 'selected':'' }}>
+
+                            {{ $country->name }}
+
+                        </option>
+
+                    @endforeach
+
+                </select>
+
+                <select
+                    name="countries[]"
+                    class="border rounded-xl p-3">
+
+                    <option value="">Select Country</option>
+
+                    @foreach($countries as $country)
+
+                        <option
+                            value="{{ $country->id }}"
+                            {{ in_array($country->id,$selected) ? 'selected':'' }}>
+
+                            {{ $country->name }}
+
+                        </option>
+
+                    @endforeach
+
+                </select>
+
+                <select
+                    name="countries[]"
+                    class="border rounded-xl p-3">
+
+                    <option value="">Select Country</option>
+
+                    @foreach($countries as $country)
+
+                        <option
+                            value="{{ $country->id }}"
+                            {{ in_array($country->id,$selected) ? 'selected':'' }}>
+
+                            {{ $country->name }}
+
+                        </option>
+
+                    @endforeach
+
+                </select>
+
+                <button
+                    class="bg-pink-600 hover:bg-pink-700 text-white rounded-xl">
+
+                    Compare
+
+                </button>
+
+            </div>
+
+        </form>
 
     </div>
 
 </div>
 
-{{-- Chart --}}
-<div class="bg-white rounded-lg shadow p-6 mb-6">
+@if(isset($comparison) && $comparison->count() > 0)
 
-    <canvas id="riskChart"></canvas>
+<div class="bg-white rounded-2xl shadow mt-8 overflow-hidden">
+
+    <div class="p-6 border-b">
+
+        <h2 class="text-2xl font-bold text-slate-800">
+            Comparison Result
+        </h2>
+
+    </div>
+
+    <table class="min-w-full">
+
+        <thead class="bg-gray-50">
+
+            <tr>
+
+                <th class="px-6 py-4 text-left">
+                    Country
+                </th>
+
+                <th class="px-6 py-4 text-center">
+                    Weather
+                </th>
+
+                <th class="px-6 py-4 text-center">
+                    Economy
+                </th>
+
+                <th class="px-6 py-4 text-center">
+                    News
+                </th>
+
+                <th class="px-6 py-4 text-center">
+                    Total
+                </th>
+
+                <th class="px-6 py-4 text-center">
+                    Risk Level
+                </th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach($comparison as $risk)
+
+            <tr class="border-t hover:bg-gray-50">
+
+                <td class="px-6 py-5 font-semibold">
+
+                    {{ $risk->country->name }}
+
+                </td>
+
+                <td class="px-6 py-5 text-center">
+
+                    {{ $risk->weather_score }}
+
+                </td>
+
+                <td class="px-6 py-5 text-center">
+
+                    {{ $risk->economy_score }}
+
+                </td>
+
+                <td class="px-6 py-5 text-center">
+
+                    {{ $risk->news_score }}
+
+                </td>
+
+                <td class="px-6 py-5 text-center font-bold text-blue-600">
+
+                    {{ $risk->total_score }}
+
+                </td>
+
+                <td class="px-6 py-5 text-center">
+
+                    @if($risk->risk_level == 'High')
+
+                        <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full">
+
+                            🔴 High
+
+                        </span>
+
+                    @elseif($risk->risk_level == 'Medium')
+
+                        <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">
+
+                            🟡 Medium
+
+                        </span>
+
+                    @else
+
+                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full">
+
+                            🟢 Low
+
+                        </span>
+
+                    @endif
+
+                </td>
+
+            </tr>
+
+            @endforeach
+
+        </tbody>
+
+    </table>
+
+    @if(isset($comparison) && $comparison->count() > 0)
+
+    <div class="bg-white rounded-2xl shadow mt-8 p-6">
+
+        <h2 class="text-2xl font-bold mb-5">
+
+            Risk Score Chart
+
+        </h2>
+
+        <canvas id="riskChart" height="120"></canvas>
+
+    </div>
+
+    @endif
 
 </div>
-
-{{-- Table --}}
-<div class="bg-white rounded-lg shadow p-6">
-
-<table class="w-full border-collapse">
-
-<thead>
-
-<tr class="bg-gray-100">
-
-<th class="border p-3">Country</th>
-
-<th class="border p-3">Weather</th>
-
-<th class="border p-3">Economy</th>
-
-<th class="border p-3">News</th>
-
-<th class="border p-3">Total</th>
-
-<th class="border p-3">Risk Level</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-@forelse($comparisons as $item)
-
-<tr>
-
-<td class="border p-2">
-
-{{ $item->country->name }}
-
-</td>
-
-<td class="border p-2 text-center">
-
-{{ $item->weather_score }}
-
-</td>
-
-<td class="border p-2 text-center">
-
-{{ $item->economy_score }}
-
-</td>
-
-<td class="border p-2 text-center">
-
-{{ $item->news_score }}
-
-</td>
-
-<td class="border p-2 text-center font-bold">
-
-{{ $item->total_score }}
-
-</td>
-
-<td class="border p-2 text-center">
-
-@if($item->risk_level=="High")
-
-<span class="bg-red-600 text-white px-3 py-1 rounded">
-
-🔴 High
-
-</span>
-
-@elseif($item->risk_level=="Medium")
-
-<span class="bg-yellow-500 text-white px-3 py-1 rounded">
-
-🟡 Medium
-
-</span>
-
-@else
-
-<span class="bg-green-600 text-white px-3 py-1 rounded">
-
-🟢 Low
-
-</span>
 
 @endif
 
-</td>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-</tr>
+@if(isset($comparison) && $comparison->count() > 0)
 
-@empty
-
-<tr>
-
-<td colspan="6" class="text-center p-6">
-
-Belum ada data comparison.
-
-</td>
-
-</tr>
-
-@endforelse
-
-</tbody>
-
-</table>
-
-</div>
-
-{{-- Chart JS --}}
 <script>
 
 const ctx = document.getElementById('riskChart');
@@ -178,50 +260,34 @@ new Chart(ctx,{
 
     data:{
 
-        labels:@json($labels),
+        labels:[
+            @foreach($comparison as $risk)
+                "{{ $risk->country->name }}",
+            @endforeach
+        ],
 
         datasets:[{
 
-            label:'Risk Score',
+            label:'Total Risk Score',
 
-            data:@json($scores),
-
-            borderWidth:1
+            data:[
+                @foreach($comparison as $risk)
+                    {{ $risk->total_score }},
+                @endforeach
+            ]
 
         }]
 
     },
 
     options:{
-
-        responsive:true,
-
-        plugins:{
-
-            legend:{
-
-                display:true
-
-            }
-
-        },
-
-        scales:{
-
-            y:{
-
-                beginAtZero:true,
-
-                max:100
-
-            }
-
-        }
-
+        responsive:true
     }
 
 });
 
 </script>
+
+@endif
 
 @endsection
