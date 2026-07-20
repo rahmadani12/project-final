@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\CountryService;
 use App\Models\Country;
 use Illuminate\Http\Request;
+use App\Services\NotificationService;
 
 class CountryController extends Controller
 {
@@ -61,6 +62,12 @@ class CountryController extends Controller
 
         ]);
 
+        NotificationService::create(
+            '🌍',
+            'Country Added',
+            $request->name . ' has been added successfully.'
+        );
+
         return redirect()
             ->route('countries.index')
             ->with('success', 'Country berhasil ditambahkan.');
@@ -95,6 +102,12 @@ class CountryController extends Controller
             );
 
         }
+
+        NotificationService::create(
+            '🌍',
+            'Countries Imported',
+            count($countries) . ' countries imported successfully.'
+        );
 
         return redirect()
             ->route('countries.index')
@@ -136,6 +149,12 @@ class CountryController extends Controller
 
         ]);
 
+        NotificationService::create(
+            '✏️',
+            'Country Updated',
+            $country->name . ' has been updated.'
+        );
+
         return redirect()
             ->route('countries.index')
             ->with('success', 'Data berhasil diperbarui.');
@@ -143,7 +162,14 @@ class CountryController extends Controller
 
     public function destroy(Country $country)
     {
+        $name = $country->name;
         $country->delete();
+
+        NotificationService::create(
+            '🗑️',
+            'Country Deleted',
+            $name . ' has been deleted.'
+        );
 
         return redirect()
             ->route('countries.index')

@@ -22,49 +22,173 @@
         {{-- Right Menu --}}
         <div class="flex items-center gap-6">
 
-            {{-- Sync --}}
-            <button
-                class="bg-[#C24366] hover:bg-[#881144] text-white px-6 py-3 rounded-xl font-semibold transition">
-
-                🔄 Sync Data
-
-            </button>
-
             {{-- Notification --}}
-            <div class="relative cursor-pointer">
+            <div class="relative">
 
-                <span class="text-3xl">
+                <button
+                    id="notificationBtn"
+                    class="relative text-3xl hover:scale-110 transition">
+
                     🔔
-                </span>
 
-                <span
-                    class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    @if($notifications->count())
 
-                    3
+                        <span
+                            class="absolute -top-2 -right-2
+                            bg-red-500 text-white
+                            text-xs font-bold
+                            rounded-full
+                            w-5 h-5
+                            flex items-center justify-center">
 
-                </span>
+                            {{ $notifications->count() }}
+
+                        </span>
+
+                    @endif
+
+                </button>
+
+                <div
+                    id="notificationMenu"
+                    class="hidden absolute right-0 mt-3
+                        w-96 bg-white rounded-2xl
+                        shadow-2xl border border-pink-100
+                        overflow-hidden z-50">
+
+                    <div class="px-5 py-4 border-b">
+
+                        <h3 class="font-bold text-lg">
+                            🔔 Notifications
+                        </h3>
+
+                    </div>
+
+                    @forelse($notifications as $item)
+
+                        <div
+                            class="px-5 py-4 hover:bg-pink-50
+                            border-b cursor-pointer">
+
+                            <div class="font-semibold">
+
+                                {{ $item->icon }}
+
+                                {{ $item->title }}
+
+                            </div>
+
+                            <div
+                                class="text-sm text-gray-500 mt-1">
+
+                                {{ $item->message }}
+
+                            </div>
+
+                            <div
+                                class="text-xs text-pink-600 mt-2">
+
+                                {{ $item->created_at->diffForHumans() }}
+
+                            </div>
+
+                        </div>
+
+                    @empty
+
+                        <div class="p-6 text-center text-gray-500">
+
+                            Tidak ada notifikasi
+
+                        </div>
+
+                    @endforelse
+
+                </div>
 
             </div>
 
             {{-- User --}}
-            <div class="flex items-center gap-3">
+            <div class="relative">
 
-                <div
-                    class="w-12 h-12 rounded-full bg-[#C24366] text-white flex items-center justify-center font-bold text-lg">
+                <button
+                    id="userMenuBtn"
+                    class="flex items-center gap-3 hover:bg-gray-100 rounded-xl px-3 py-2 transition">
 
-                    A
+                    <div
+                        class="w-12 h-12 rounded-full bg-[#C24366] text-white flex items-center justify-center font-bold text-lg">
 
-                </div>
+                        {{ strtoupper(substr(Auth::user()->name,0,1)) }}
 
-                <div>
+                    </div>
 
-                    <p class="font-semibold">
-                        Administrator
-                    </p>
+                    <div class="text-left">
 
-                    <p class="text-sm text-gray-500">
-                        Online
-                    </p>
+                        <p class="font-semibold">
+                            {{ Auth::user()->name }}
+                        </p>
+
+                        <p class="text-sm text-gray-500">
+                            Online
+                        </p>
+
+                    </div>
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="w-5 h-5 text-gray-500"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor">
+
+                        <path stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 9l-7 7-7-7"/>
+
+                    </svg>
+
+                </button>
+
+                {{-- Dropdown --}}
+                <div id="userMenu"
+                    class="hidden absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-xl border overflow-hidden z-50">
+
+                    <a href="{{ route('profile') }}"
+                    class="block px-5 py-3 hover:bg-pink-50">
+
+                        👤 My Profile
+
+                    </a>
+
+                    <a href="#"
+                    class="block px-5 py-3 hover:bg-pink-50">
+
+                        ⚙️ Account Settings
+
+                    </a>
+
+                    <a href="#"
+                    class="block px-5 py-3 hover:bg-pink-50">
+
+                        🔒 Change Password
+
+                    </a>
+
+                    <hr>
+
+                    <form method="POST" action="{{ route('logout') }}">
+
+                        @csrf
+
+                        <button
+                            type="submit"
+                            class="w-full text-left px-5 py-3 text-red-600 hover:bg-red-50">
+
+                            🚪 Logout
+
+                        </button>
+
+                    </form>
 
                 </div>
 
@@ -203,4 +327,63 @@
         }
 
     });
+
+    // Notification
+
+    const notificationBtn =
+    document.getElementById("notificationBtn");
+
+    const notificationMenu =
+    document.getElementById("notificationMenu");
+
+    notificationBtn.addEventListener("click", function(e){
+
+        e.stopPropagation();
+
+        notificationMenu.classList.toggle("hidden");
+
+    });
+
+    document.addEventListener("click", function(e){
+
+        if(
+            !notificationMenu.contains(e.target) &&
+            !notificationBtn.contains(e.target)
+        ){
+
+            notificationMenu.classList.add("hidden");
+
+        }
+
+    });
+
+    // User Menu
+
+    const userBtn = document.getElementById("userMenuBtn");
+    const userMenu = document.getElementById("userMenu");
+
+    if (userBtn && userMenu) {
+
+        userBtn.addEventListener("click", function(e){
+
+            e.stopPropagation();
+
+            userMenu.classList.toggle("hidden");
+
+        });
+
+        document.addEventListener("click", function(e){
+
+            if(
+                !userBtn.contains(e.target) &&
+                !userMenu.contains(e.target)
+            ){
+
+                userMenu.classList.add("hidden");
+
+            }
+
+        });
+
+    }
 </script>
