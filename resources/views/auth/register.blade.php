@@ -289,7 +289,7 @@ Global Supply Chain Risk Intelligence Platform
 
 <p>Create New Account</p>
 
-<form method="POST" action="{{ route('login') }}">
+<form method="POST" action="{{ route('register') }}">
 @csrf
 
 <label>Name</label>
@@ -306,7 +306,7 @@ Global Supply Chain Risk Intelligence Platform
 type="password"
 name="password_confirmation">
 
-<button class="btn-login">
+<button class="btn-register">
 REGISTER
 </button>
 
