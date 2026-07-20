@@ -8,7 +8,7 @@ class CountryService
 {
     public function getCountries()
     {
-        $path = databasse_path('data/countries.json');
+        $path = base_path('database/data/countries.json');
 
         if (!file_exists($path)) {
             throw new \Exception('countries.json not found.');
