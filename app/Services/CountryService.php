@@ -8,15 +8,14 @@ class CountryService
 {
     public function getCountries()
     {
-        $response = Http::withToken(env('REST_COUNTRIES_API_KEY'))
-            ->acceptJson()
+        $response = Http::acceptJson()
             ->timeout(60)
-            ->get('https://api.restcountries.com/countries/v5?limit=100');
+            ->get('https://restcountries.com/v3.1/all');
 
         if (!$response->successful()) {
             dd($response->status(), $response->body());
         }
 
-        return $response->json('data');
+        return $response->json();
     }
 }
