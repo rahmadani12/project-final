@@ -60,11 +60,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Ports
     Route::resource('ports', PortController::class);
-    Route::get('/ports/{port}', [PortController::class, 'show'])
-        ->name('ports.show');
-    Route::get('/ports/{port}/edit', [PortController::class, 'edit'])->name('ports.edit');
-    Route::put('/ports/{port}', [PortController::class, 'update'])->name('ports.update');
-    Route::delete('/ports/{port}', [PortController::class, 'destroy'])->name('ports.destroy');
+
     Route::post('/ports/update-api', [PortController::class, 'updateApi'])
         ->name('ports.updateApi');
 
