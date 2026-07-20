@@ -98,12 +98,11 @@ class CountryController extends Controller
                     'region'     => $item['region'] ?? '',
                     'subregion'  => $item['subregion'] ?? '',
                     'population' => $item['population'] ?? 0,
-                    'flag'       => $item['flag'] ?? '',
+                    'flag'       => $item['flags']['png'] ?? '',
                     'latitude'   => $item['latlng'][0] ?? null,
                     'longitude'  => $item['latlng'][1] ?? null,
                 ]
             );
-
         }
 
         NotificationService::create(

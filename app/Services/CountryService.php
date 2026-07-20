@@ -8,14 +8,12 @@ class CountryService
 {
     public function getCountries()
     {
-        $response = Http::acceptJson()
-            ->timeout(60)
-            ->get('https://restcountries.com/v3.1/all');
+        $path = storage_path('app/countries.json');
 
-        if (!$response->successful()) {
-            dd($response->status(), $response->body());
+        if (!file_exists($path)) {
+            throw new \Exception('countries.json not found.');
         }
 
-        return $response->json();
+        return json_decode(file_get_contents($path), true);
     }
 }
